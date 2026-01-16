@@ -11,8 +11,6 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'Daily' | 'Single' | 'Multi' | 'Couch'>('Daily');
-  
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const fetchDailyPicks = useCallback(async (force = false) => {
     setLoading(true);
@@ -30,12 +28,17 @@ const App: React.FC = () => {
         }
       }
 
+      console.log("Fetching fresh recommendations from Gemini...");
       const recommendations = await getDailyRecommendations();
       setData(recommendations);
       localStorage.setItem('ps_picks_v1', JSON.stringify(recommendations));
-    } catch (err) {
-      console.error(err);
-      setError("Sync failed. Check your internet connection.");
+    } catch (err: any) {
+      console.error("Fetch failed details:", err);
+      // provide more useful error context
+      const msg = err?.message?.includes("401") 
+        ? "API Key invalid. Check Vercel settings." 
+        : "Sync failed. Please try again in a few minutes.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -62,11 +65,14 @@ const App: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl text-red-400 flex items-center gap-3">
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-sm font-medium">{error}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl text-red-400 flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+            <p className="text-[10px] opacity-50 ml-8">Check the browser console (F12) for technical details.</p>
           </div>
         )}
 
@@ -110,12 +116,12 @@ const App: React.FC = () => {
               />
             )}
 
-            {activeTab === 'Daily' && data.sources.length > 0 && (
+            {activeTab === 'Daily' && data.sources && data.sources.length > 0 && (
               <div className="mt-12 pt-6 border-t border-white/5 opacity-60">
                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Live Intelligence Sources</h3>
                 <div className="flex flex-wrap gap-3">
                   {data.sources.slice(0, 3).map((source, idx) => (
-                    <a key={idx} href={source.web.uri} target="_blank" className="text-[10px] text-blue-500 hover:underline">{source.title}</a>
+                    <a key={idx} href={source.web.uri} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 hover:underline">{source.title}</a>
                   ))}
                 </div>
               </div>
@@ -124,7 +130,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Android Style Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#00040f]/95 backdrop-blur-xl border-t border-white/10 px-4 pb-safe pt-2">
         <div className="max-w-md mx-auto flex justify-between items-center">
           <NavButton 
