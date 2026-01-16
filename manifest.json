@@ -1,0 +1,19 @@
+
+{
+  "name": "PS Plus Scout",
+  "short_name": "PS Scout",
+  "description": "Daily PS5 Game Recommendations for India",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#00040f",
+  "theme_color": "#00040f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/588/588258.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
