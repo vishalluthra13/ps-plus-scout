@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "react": "^19.2.3",
-    "@google/genai": "^1.37.0",
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
