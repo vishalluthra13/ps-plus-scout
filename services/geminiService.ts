@@ -25,7 +25,7 @@ STRICT RULES:
 
 export const getDailyRecommendations = async (): Promise<DailyRecommendations> => {
   // Use Pro model for complex reasoning + search + JSON compliance
-  const model = 'gemini-3-pro-preview';
+  const model = 'gemini-2.5-flash-preview-05-20';
   
   try {
     const response = await ai.models.generateContent({
